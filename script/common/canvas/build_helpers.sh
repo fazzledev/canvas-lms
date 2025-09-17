@@ -100,12 +100,26 @@ permissions so we can run bundle install."
   fi
 }
 
+function check_yarn_permissions {
+  message "Checking Yarn permissions..."
+  
+  # Test if we can write to Yarn directories
+  if ! _canvas_lms_track_with_log run_command touch packages/canvas-media/test-write 2>/dev/null; then
+    message \
+"The 'docker' user is not allowed to write to Yarn directories. We need write
+permissions so we can run yarn install."
+    
+    confirm_command 'docker-compose exec --user root web bash -c "mkdir -p packages/canvas-media/node_modules node_modules; touch yarn-error.log; chmod 666 yarn-error.log; chmod -R 777 packages/ node_modules/ 2>/dev/null || true"' || true
+  fi
+}
+
 function build_assets {
   message "Building assets..."
   check_gemfile_lock_permissions
   start_spinner "> Bundle install..."
   _canvas_lms_track_with_log run_command ./script/install_assets.sh -c bundle
   stop_spinner
+  check_yarn_permissions
   start_spinner "> Yarn install...."
   _canvas_lms_track_with_log run_command ./script/install_assets.sh -c yarn
   stop_spinner
