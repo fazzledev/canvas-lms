@@ -32,8 +32,77 @@ function build_images {
   stop_spinner
 }
 
+# Define the list of lock files that bundle install needs to write to
+MAIN_LOCK_FILES=(
+  "Gemfile.lock"
+  "Gemfile.rails72.plugins.lock" 
+  "Gemfile.rails80.lock"
+  "Gemfile.rails80.plugins.lock"
+  "Gemfile.d/rubocop.rb.lock"
+  "gems/tatl_tael/Gemfile.lock"
+)
+
+# Define directories that need to be created
+REQUIRED_DIRS=(
+  "gems/tatl_tael"
+  "Gemfile.d"
+)
+
+function create_required_lock_files {
+  message "Creating required lock files..."
+  
+  # Create directories
+  for dir in "${REQUIRED_DIRS[@]}"; do
+    docker-compose exec --user root web mkdir -p "$dir" 2>/dev/null || true
+  done
+  
+  # Create lock files
+  for file in "${MAIN_LOCK_FILES[@]}"; do
+    docker-compose exec --user root web touch "$file" 2>/dev/null || true
+  done
+}
+
+function fix_lock_file_permissions {
+  message "Fixing lock file permissions..."
+  confirm_command 'docker-compose exec --user root web find . -name "*.lock" -exec chmod 666 {} \;' || true
+}
+
+function clean_conflicting_lock_files {
+  message "Cleaning conflicting lock files..."
+  confirm_command "docker-compose exec --user root web rm -f ${MAIN_LOCK_FILES[*]}" || true
+}
+
+function check_gemfile_lock_permissions {
+  message "Checking Gemfile.lock permissions..."
+  
+  # Create missing lock files as root first
+  create_required_lock_files
+  
+  # Check for lock file conflicts and clean them if needed
+  message "Checking for lock file conflicts..."
+  if ! _canvas_lms_track_with_log run_command bundle check 2>/dev/null; then
+    message \
+"Lock files are out of sync or have conflicts. We need to clean them so bundle install
+can regenerate them properly."
+    
+    clean_conflicting_lock_files
+    create_required_lock_files
+    fix_lock_file_permissions
+  fi
+  
+  # Test if we can write to the lock files that bundle install needs
+  if ! _canvas_lms_track_with_log run_command touch "${MAIN_LOCK_FILES[0]}" "${MAIN_LOCK_FILES[1]}" gems/activesupport-suspend_callbacks/Gemfile.lock 2>/dev/null; then
+    message \
+"The 'docker' user is not allowed to write to Gemfile.lock files. We need write
+permissions so we can run bundle install."
+    
+    fix_lock_file_permissions
+  fi
+}
+
 function build_assets {
   message "Building assets..."
+  check_gemfile_lock_permissions
   start_spinner "> Bundle install..."
   _canvas_lms_track_with_log run_command ./script/install_assets.sh -c bundle
   stop_spinner
