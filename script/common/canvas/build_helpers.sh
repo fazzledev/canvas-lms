@@ -113,6 +113,19 @@ permissions so we can run yarn install."
   fi
 }
 
+function check_webpack_permissions {
+  message "Checking webpack compilation permissions..."
+  
+  # Test if we can write to webpack directories and files
+  if ! _canvas_lms_track_with_log run_command touch ui/shared/bundles/extensions.ts 2>/dev/null; then
+    message \
+"The 'docker' user is not allowed to write to webpack directories. We need write
+permissions so we can compile assets."
+    
+    confirm_command 'docker-compose exec --user root web bash -c "mkdir -p ui/shared/bundles translations; echo \"export default {};\" > ui/shared/bundles/extensions.ts; cp packages/translations/lib/en.json translations/en.json; chmod -R 777 ui/shared/bundles/ translations/ 2>/dev/null || true"' || true
+  fi
+}
+
 function build_assets {
   message "Building assets..."
   check_gemfile_lock_permissions
@@ -123,6 +136,7 @@ function build_assets {
   start_spinner "> Yarn install...."
   _canvas_lms_track_with_log run_command ./script/install_assets.sh -c yarn
   stop_spinner
+  check_webpack_permissions
   start_spinner "> Compile assets...."
   _canvas_lms_track_with_log run_command ./script/install_assets.sh -c compile
   stop_spinner
