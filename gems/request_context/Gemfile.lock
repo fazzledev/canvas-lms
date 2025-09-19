@@ -139,7 +139,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.13.2)
+    json (2.14.1)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -220,7 +220,7 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
     securerandom (0.4.1)
-    sorbet-runtime (0.6.12544)
+    sorbet-runtime (0.6.12549)
     stringio (3.1.7)
     thor (1.4.0)
     timecop (0.9.10)
@@ -248,4 +248,4 @@ RUBY VERSION
    ruby 3.4.1p0
 
 BUNDLED WITH
-   2.6.7
+   2.6.3

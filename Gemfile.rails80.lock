@@ -692,7 +692,7 @@ GEM
     iso8601 (0.13.0)
     jira_ref_parser (1.0.1)
     jmespath (1.6.2)
-    json (2.13.2)
+    json (2.14.1)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -710,7 +710,7 @@ GEM
       simpleidn (~> 0.2)
     jsonpath (1.1.5)
       multi_json
-    jwt (2.10.2)
+    jwt (3.1.2)
       base64
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
@@ -1125,7 +1125,7 @@ GEM
     soap4r-middleware (0.8.7)
       soap4r-ruby1.9 (= 2.0.5)
     soap4r-ruby1.9 (2.0.5)
-    sorbet-runtime (0.6.12544)
+    sorbet-runtime (0.6.12549)
     spring (4.4.0)
     spring-commands-parallel-rspec (1.1.0)
       spring (>= 0.9.1)
@@ -1177,9 +1177,9 @@ GEM
     trailblazer-option (0.1.2)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
-    twilio-ruby (7.8.0)
+    twilio-ruby (7.8.1)
       faraday (>= 0.9, < 3.0)
-      jwt (>= 1.5, < 3.0)
+      jwt (>= 1.5, < 4.0)
       nokogiri (>= 1.6, < 2.0)
     twitter-text (3.1.0)
       idn-ruby
@@ -1439,4 +1439,4 @@ RUBY VERSION
    ruby 3.4.1p0
 
 BUNDLED WITH
-   2.6.7
+   2.6.3

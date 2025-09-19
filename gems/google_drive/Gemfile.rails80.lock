@@ -57,8 +57,8 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.13.2)
-    jwt (2.10.2)
+    json (2.14.1)
+    jwt (3.1.2)
       base64
     logger (1.7.0)
     mini_mime (1.1.5)
@@ -128,4 +128,4 @@ RUBY VERSION
    ruby 3.4.1p0
 
 BUNDLED WITH
-   2.6.7
+   2.6.3
